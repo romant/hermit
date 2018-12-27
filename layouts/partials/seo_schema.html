@@ -33,7 +33,11 @@
         {{ if isset .Params "image" }}
             "image": {
                 "@type" : "ImageObject",
-                "url" : "{{ .Permalink }}{{ .Params.image }}"
+                {{ if findRE "^/images/" .Params.image }}
+                    "url" : "{{ .Site.BaseURL }}{{ substr .Params.image 1 }}"
+                {{ else }}
+                    "url" : "{{ .Permalink }}{{ .Params.image }}"
+                {{ end }}
             },
         {{ end }}
         "keywords" : [ {{ if isset .Params "tags" }}{{ range .Params.tags }}"{{ . }}",{{ end }}{{ end }}"Blog" ]      
