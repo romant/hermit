@@ -15,7 +15,6 @@
 	<link rel="manifest" href="{{"site.webmanifest" | relURL}}">
 	<link rel="mask-icon" href="{{"safari-pinned-tab.svg" | relURL}}" color="{{.Site.Params.themeColor}}">
 	<link rel="shortcut icon" href="{{"favicon.ico?v=2" | relURL}}">
-	{{ partial "seo_schema" . }}
 	<title>{{.Title}}</title>
 	{{ range .AlternativeOutputFormats -}}
 		{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
