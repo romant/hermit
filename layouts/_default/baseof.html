@@ -9,19 +9,21 @@
 	<meta name="theme-color" content="{{.}}">
 	<meta name="msapplication-TileColor" content="{{.}}">
 	{{- end }}
-	<link rel="apple-touch-icon" sizes="180x180" href="{{"apple-touch-icon.png?v=2" | relURL}}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{{"favicon-32x32.png?v=2" | relURL}}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{{"favicon-16x16.png?v=2" | relURL}}">
-	<link rel="manifest" href="{{"site.webmanifest" | relURL}}">
-	<link rel="mask-icon" href="{{"safari-pinned-tab.svg" | relURL}}" color="{{.Site.Params.themeColor}}">
-	<link rel="shortcut icon" href="{{"favicon.ico?v=2" | relURL}}">
+	{{- partial "structured-data.html" . }}
+	{{- partial "favicons.html" }}
 	<title>{{.Title}}</title>
 	{{ range .AlternativeOutputFormats -}}
 		{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
 	{{ end -}}
 	{{ $style := resources.Get "scss/style.scss" | resources.ExecuteAsTemplate "css/style.css" . | toCSS | minify | fingerprint -}}
-	<link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ printf "integrity=%q" $style.Data.Integrity | safeHTMLAttr }}>
-	{{ block "head" . -}}{{- end }}
+	<link rel="stylesheet" href="{{ $style.Permalink }}" {{ printf "integrity=%q" $style.Data.Integrity | safeHTMLAttr }}>
+	{{- block "head" . -}}{{- end }}
+	{{- range .Site.Params.customCSS }}
+	<link rel="stylesheet" href="{{ . | absURL }}">
+	{{- end }}
+	{{- if templates.Exists "partials/extra-head.html" -}}
+	{{ partial "extra-head.html" . }}
+	{{- end }}
 </head>
 
 <body id="page">
@@ -29,8 +31,11 @@
 	{{ block "main" . -}}{{ end -}}
 	{{ block "footer" . -}}{{ end }}
 	{{ $script := resources.Get "js/main.js" | minify | fingerprint -}}
-	<script src="{{ $script.RelPermalink }}" {{ printf "integrity=%q" $script.Data.Integrity | safeHTMLAttr }}></script>
-	{{ template "_internal/google_analytics_async.html" . }}
+	<script src="{{ $script.Permalink }}" {{ printf "integrity=%q" $script.Data.Integrity | safeHTMLAttr }}></script>
+	{{- partial "analytics.html" . }}
+	{{- if templates.Exists "partials/extra-foot.html" -}}
+	{{ partial "extra-foot.html" . }}
+	{{- end }}
 </body>
 
 </html>
